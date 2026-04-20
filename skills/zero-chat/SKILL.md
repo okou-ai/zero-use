@@ -7,21 +7,7 @@ description: Use the Zero API (api.vm0.ai) to send messages to AI chat threads, 
 
 Use this skill to interact with the Zero API at `https://api.vm0.ai`.
 
-## Authentication
-
-All requests require a Bearer token. Read it from the environment:
-
-```bash
-echo $ZERO_API_KEY
-```
-
-Pass it as an HTTP header:
-
-```
-Authorization: Bearer $ZERO_API_KEY
-```
-
-If `$ZERO_API_KEY` is not set, ask the user to set it before proceeding.
+Use `zero-curl` instead of `curl` — it handles authentication automatically.
 
 ## API Endpoints
 
@@ -35,14 +21,12 @@ Creates a new thread and sends the first message, or appends to an existing thre
 
 ```bash
 # New thread
-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
-  -H "Authorization: Bearer $ZERO_API_KEY" \
+zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Your message here"}'
 
 # Append to existing thread
-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
-  -H "Authorization: Bearer $ZERO_API_KEY" \
+zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Follow-up message", "threadId": "<uuid>"}'
 ```
@@ -60,8 +44,7 @@ curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
 ### Get Thread Details
 
 ```bash
-curl https://api.vm0.ai/api/v1/chat-threads/<threadId> \
-  -H "Authorization: Bearer $ZERO_API_KEY"
+zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
 ```
 
 **Response:** `200 OK` — thread metadata
@@ -72,12 +55,10 @@ curl https://api.vm0.ai/api/v1/chat-threads/<threadId> \
 
 ```bash
 # Latest 50 messages
-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages" \
-  -H "Authorization: Bearer $ZERO_API_KEY"
+zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages"
 
 # Paginate — messages after a specific message ID
-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messageId>&limit=20" \
-  -H "Authorization: Bearer $ZERO_API_KEY"
+zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messageId>&limit=20"
 ```
 
 **Query parameters:**
@@ -94,7 +75,7 @@ curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messag
 
 | Status | Meaning |
 |--------|---------|
-| 401 | Missing or invalid API key — check `$ZERO_API_KEY` |
+| 401 | Missing or invalid API key |
 | 403 | Valid key but access denied to this resource |
 | 404 | Thread or message not found |
 | 400 | Bad request — check your request body |
@@ -104,8 +85,7 @@ curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messag
 **Start a conversation and capture the thread ID:**
 
 ```bash
-RESPONSE=$(curl -s -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
-  -H "Authorization: Bearer $ZERO_API_KEY" \
+RESPONSE=$(zero-curl -s -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Hello"}')
 
@@ -115,7 +95,5 @@ THREAD_ID=$(echo $RESPONSE | jq -r '.threadId')
 **Poll for new messages using sinceId:**
 
 ```bash
-LAST_ID="<last-seen-message-id>"
-curl -s "https://api.vm0.ai/api/v1/chat-threads/$THREAD_ID/messages?sinceId=$LAST_ID" \
-  -H "Authorization: Bearer $ZERO_API_KEY" | jq '.messages'
+zero-curl -s "https://api.vm0.ai/api/v1/chat-threads/<thread-id>/messages?sinceId=<last-id>" | jq '.messages'
 ```
