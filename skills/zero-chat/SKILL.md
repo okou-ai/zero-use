@@ -7,7 +7,7 @@ description: Use the Zero API (api.vm0.ai) to send messages to AI chat threads, 
 
 Use this skill to interact with the Zero API at `https://api.vm0.ai`.
 
-Use `zero-curl` instead of `curl` — it handles authentication automatically.
+Use `skills/zero-chat/zero-curl` instead of `curl` — it handles authentication automatically.
 
 ## API Endpoints
 
@@ -21,12 +21,12 @@ Creates a new thread and sends the first message, or appends to an existing thre
 
 ```bash
 # New thread
-zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
+skills/zero-chat/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Your message here"}'
 
 # Append to existing thread
-zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
+skills/zero-chat/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Follow-up message", "threadId": "<uuid>"}'
 ```
@@ -44,7 +44,7 @@ zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
 ### Get Thread Details
 
 ```bash
-zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
+skills/zero-chat/zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
 ```
 
 **Response:** `200 OK` — thread metadata
@@ -55,10 +55,10 @@ zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
 
 ```bash
 # Latest 50 messages
-zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages"
+skills/zero-chat/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages"
 
 # Paginate — messages after a specific message ID
-zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messageId>&limit=20"
+skills/zero-chat/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messageId>&limit=20"
 ```
 
 **Query parameters:**
@@ -85,7 +85,7 @@ zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<m
 **Start a conversation and capture the thread ID:**
 
 ```bash
-RESPONSE=$(zero-curl -s -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
+RESPONSE=$(skills/zero-chat/zero-curl -s -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Hello"}')
 
@@ -95,5 +95,5 @@ THREAD_ID=$(echo $RESPONSE | jq -r '.threadId')
 **Poll for new messages using sinceId:**
 
 ```bash
-zero-curl -s "https://api.vm0.ai/api/v1/chat-threads/<thread-id>/messages?sinceId=<last-id>" | jq '.messages'
+skills/zero-chat/zero-curl -s "https://api.vm0.ai/api/v1/chat-threads/<thread-id>/messages?sinceId=<last-id>" | jq '.messages'
 ```
