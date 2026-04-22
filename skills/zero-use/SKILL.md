@@ -1,5 +1,5 @@
 ---
-name: zero-chat
+name: zero-use
 description: Use the Zero API (api.vm0.ai) to send messages to AI chat threads, retrieve thread details, and list messages. Triggers when the user asks to send messages to Zero, interact with the Zero chat API, or manage chat threads programmatically via API.
 ---
 
@@ -7,7 +7,7 @@ description: Use the Zero API (api.vm0.ai) to send messages to AI chat threads, 
 
 Use this skill to interact with the Zero API at `https://api.vm0.ai`.
 
-Use `skills/zero-chat/zero-curl` instead of `curl` — it handles authentication automatically.
+Use `skills/zero-use/zero-curl` instead of `curl` — it handles authentication automatically.
 
 ## API Endpoints
 
@@ -21,12 +21,12 @@ Creates a new thread and sends the first message, or appends to an existing thre
 
 ```bash
 # New thread
-skills/zero-chat/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
+skills/zero-use/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Your message here"}'
 
 # Append to existing thread
-skills/zero-chat/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
+skills/zero-use/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Follow-up message", "threadId": "<uuid>"}'
 ```
@@ -44,7 +44,7 @@ skills/zero-chat/zero-curl -X POST https://api.vm0.ai/api/v1/chat-threads/messag
 ### Get Thread Details
 
 ```bash
-skills/zero-chat/zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
+skills/zero-use/zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
 ```
 
 **Response:** `200 OK` — thread metadata
@@ -55,10 +55,10 @@ skills/zero-chat/zero-curl https://api.vm0.ai/api/v1/chat-threads/<threadId>
 
 ```bash
 # Latest 50 messages
-skills/zero-chat/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages"
+skills/zero-use/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages"
 
 # Paginate — messages after a specific message ID
-skills/zero-chat/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messageId>&limit=20"
+skills/zero-use/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/messages?sinceId=<messageId>&limit=20"
 ```
 
 **Query parameters:**
@@ -85,7 +85,7 @@ skills/zero-chat/zero-curl "https://api.vm0.ai/api/v1/chat-threads/<threadId>/me
 **Start a conversation and capture the thread ID:**
 
 ```bash
-RESPONSE=$(skills/zero-chat/zero-curl -s -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
+RESPONSE=$(skills/zero-use/zero-curl -s -X POST https://api.vm0.ai/api/v1/chat-threads/messages \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Hello"}')
 
@@ -95,5 +95,5 @@ THREAD_ID=$(echo $RESPONSE | jq -r '.threadId')
 **Poll for new messages using sinceId:**
 
 ```bash
-skills/zero-chat/zero-curl -s "https://api.vm0.ai/api/v1/chat-threads/<thread-id>/messages?sinceId=<last-id>" | jq '.messages'
+skills/zero-use/zero-curl -s "https://api.vm0.ai/api/v1/chat-threads/<thread-id>/messages?sinceId=<last-id>" | jq '.messages'
 ```
