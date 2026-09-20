@@ -5,7 +5,7 @@ Agent skills for the [Zero](https://vm0.ai) chat API.
 ## Install
 
 ```bash
-npx skills add vm0-ai/zero-use
+npx skills add okou-ai/zero-use
 ```
 
 ## Setup
